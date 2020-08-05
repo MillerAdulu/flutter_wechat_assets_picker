@@ -7,8 +7,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
-
 import 'package:wechat_assets_picker/src/constants/constants.dart';
+
+import '../../wechat_assets_picker.dart';
+
 
 /// [ChangeNotifier] for assets picker.
 /// 资源选择器的 provider model

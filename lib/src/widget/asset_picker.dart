@@ -13,14 +13,18 @@ import 'package:flutter/services.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+import '../../wechat_assets_picker.dart';
 import '../constants/constants.dart';
 import 'builder/fade_image_builder.dart';
 import 'builder/slide_page_transition_builder.dart';
 import 'fixed_appbar.dart';
 
-class AssetPicker extends StatelessWidget {
+AssetPickerProvider provider;
+
+AssetPickerViewerProvider providerMain;
+
+class AssetPicker extends StatefulWidget {
   AssetPicker({
     Key key,
     @required this.provider,
@@ -205,38 +209,6 @@ class AssetPicker extends StatelessWidget {
     }
   }
 
-  /// Whether the current platform is Apple OS.
-  /// 当前平台是否苹果系列系统 (iOS & MacOS)
-  bool get isAppleOS => Platform.isIOS || Platform.isMacOS;
-
-  /// Whether the picker is under the single asset mode.
-  /// 选择器是否为单选模式
-  bool get isSingleAssetMode => provider.maxAssets == 1;
-
-  /// Space between assets item widget.
-  /// 资源部件之间的间隔
-  double get itemSpacing => 2.0;
-
-  /// Item's height in app bar.
-  /// 顶栏内各个组件的统一高度
-  double get appBarItemHeight => 32.0;
-
-  /// Height for bottom action bar.
-  /// 底部操作栏的高度
-  double get bottomActionBarHeight => kToolbarHeight / 1.1;
-
-  /// Blur radius in Apple OS layout mode.
-  /// 苹果系列系统布局方式下的模糊度
-  double get appleOSBlurRadius => 15.0;
-
-  /// [Curve] when triggering path switching.
-  /// 切换路径时的动画曲线
-  Curve get switchingPathCurve => Curves.easeInOut;
-
-  /// [Duration] when triggering path switching.
-  /// 切换路径时的动画时长
-  Duration get switchingPathDuration => kThemeAnimationDuration * 1.5;
-
   /// Build a dark theme according to the theme color.
   /// 通过主题色构建一个默认的暗黑主题
   static ThemeData themeData(Color themeColor) => ThemeData.dark().copyWith(
@@ -279,9 +251,53 @@ class AssetPicker extends StatelessWidget {
         ),
       );
 
+  @override
+  _AssetPickerState createState() => _AssetPickerState();
+}
+
+class _AssetPickerState extends State<AssetPicker> {
+  @override
+  initState() {
+    super.initState();
+    providerMain = AssetPickerViewerProvider(widget.provider.selectedAssets);
+  }
+
+  /// Whether the current platform is Apple OS.
+  /// 当前平台是否苹果系列系统 (iOS & MacOS)
+  bool get isAppleOS => Platform.isIOS || Platform.isMacOS;
+
+  /// Whether the picker is under the single asset mode.
+  /// 选择器是否为单选模式
+  bool get isSingleAssetMode => widget.provider.maxAssets == 1;
+
+  /// Space between assets item widget.
+  /// 资源部件之间的间隔
+  double get itemSpacing => 2.0;
+
+  /// Item's height in app bar.
+  /// 顶栏内各个组件的统一高度
+  double get appBarItemHeight => 32.0;
+
+  /// Height for bottom action bar.
+  /// 底部操作栏的高度
+  double get bottomActionBarHeight => kToolbarHeight / 1.1;
+
+  /// Blur radius in Apple OS layout mode.
+  /// 苹果系列系统布局方式下的模糊度
+  double get appleOSBlurRadius => 15.0;
+
+  /// [Curve] when triggering path switching.
+  /// 切换路径时的动画曲线
+  Curve get switchingPathCurve => Curves.easeInOut;
+
+  /// [Duration] when triggering path switching.
+  /// 切换路径时的动画时长
+  Duration get switchingPathDuration => kThemeAnimationDuration * 1.5;
+
   /// [ThemeData] for the picker.
   /// 选择器使用的主题
-  ThemeData get theme => pickerTheme ?? themeData(themeColor);
+  ThemeData get theme =>
+      widget.pickerTheme ?? AssetPicker.themeData(widget.themeColor);
 
   /// Return a system ui overlay style according to
   /// the brightness of the theme data.
@@ -355,7 +371,10 @@ class AssetPicker extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         splashFactory: InkSplash.splashFactory,
-        onTap: () => provider.switchPath(pathEntity),
+        onTap: () {
+          print("I am here!");
+          widget.provider.switchPath(pathEntity);
+        },
         child: SizedBox(
           height: isAppleOS ? 64.0 : 52.0,
           child: Row(
@@ -440,7 +459,8 @@ class AssetPicker extends StatelessWidget {
                   if (currentPathEntity == pathEntity) {
                     return AspectRatio(
                       aspectRatio: 1.0,
-                      child: Icon(Icons.check, color: themeColor, size: 26.0),
+                      child: Icon(Icons.check,
+                          color: widget.themeColor, size: 26.0),
                     );
                   } else {
                     return const SizedBox.shrink();
@@ -557,7 +577,7 @@ class AssetPicker extends StatelessWidget {
             } else {
               return PlatformProgressIndicator(
                 color: theme.iconTheme.color,
-                size: Screens.width / gridCount / 3,
+                size: Screens.width / widget.gridCount / 3,
               );
             }
           },
@@ -576,7 +596,7 @@ class AssetPicker extends StatelessWidget {
             } else {
               return PlatformProgressIndicator(
                 color: theme.iconTheme.color,
-                size: Screens.width / gridCount / 3,
+                size: Screens.width / widget.gridCount / 3,
               );
             }
           },
@@ -594,8 +614,9 @@ class AssetPicker extends StatelessWidget {
             minWidth: provider.isSelectedNotEmpty ? 48.0 : 20.0,
             height: appBarItemHeight,
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            color:
-                provider.isSelectedNotEmpty ? themeColor : theme.dividerColor,
+            color: provider.isSelectedNotEmpty
+                ? widget.themeColor
+                : theme.dividerColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(3.0),
             ),
@@ -762,22 +783,18 @@ class AssetPicker extends StatelessWidget {
         final bool selected = selectedAssets.contains(asset);
         return Positioned.fill(
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () async {
-              final List<AssetEntity> result =
-                  await AssetPickerViewer.pushToViewer(
-                context,
-                currentIndex: index,
-                assets: provider.currentAssets,
-                themeData: theme,
-                specialPickerType:
-                    asset.type == AssetType.video ? specialPickerType : null,
-              );
-              if (result != null) {
-                Navigator.of(context).pop(result);
+              if (selected) {
+                widget.provider.unSelectAsset(asset);
+              } else {
+                widget.provider.selectAsset(asset);
               }
             },
             child: AnimatedContainer(
               duration: switchingPathDuration,
+              // duration: kThemeAnimationDuration,
+              curve: Curves.easeInOut,
               color: selected
                   ? theme.colorScheme.primary.withOpacity(0.45)
                   : Colors.black.withOpacity(0.1),
@@ -796,7 +813,7 @@ class AssetPicker extends StatelessWidget {
           provider.selectedAssets,
       builder: (BuildContext _, List<AssetEntity> selectedAssets, Widget __) {
         final bool selected = selectedAssets.contains(asset);
-        final double indicatorSize = Screens.width / gridCount / 3;
+        final double indicatorSize = Screens.width / widget.gridCount / 3;
         return Positioned(
           top: 0.0,
           right: 0.0,
@@ -804,17 +821,17 @@ class AssetPicker extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: () {
               if (selected) {
-                provider.unSelectAsset(asset);
+                widget.provider.unSelectAsset(asset);
               } else {
                 if (isSingleAssetMode) {
-                  provider.selectedAssets.clear();
+                  widget.provider.selectedAssets.clear();
                 }
-                provider.selectAsset(asset);
+                widget.provider.selectAsset(asset);
               }
             },
             child: Container(
               margin: EdgeInsets.all(
-                  Screens.width / gridCount / (isAppleOS ? 12.0 : 15.0)),
+                  Screens.width / widget.gridCount / (isAppleOS ? 12.0 : 15.0)),
               width: indicatorSize,
               height: indicatorSize,
               alignment: AlignmentDirectional.topEnd,
@@ -826,7 +843,7 @@ class AssetPicker extends StatelessWidget {
                   border: !selected
                       ? Border.all(color: Colors.white, width: 2.0)
                       : null,
-                  color: selected ? themeColor : null,
+                  color: selected ? widget.themeColor : null,
                   shape: BoxShape.circle,
                 ),
                 child: AnimatedSwitcher(
@@ -887,7 +904,7 @@ class AssetPicker extends StatelessWidget {
                     )
                   : EdgeInsets.zero,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: gridCount,
+                crossAxisCount: widget.gridCount,
                 mainAxisSpacing: itemSpacing,
                 crossAxisSpacing: itemSpacing,
               ),
@@ -917,7 +934,7 @@ class AssetPicker extends StatelessWidget {
       return currentAssets.length;
     }
     int length;
-    switch (customItemPosition) {
+    switch (widget.customItemPosition) {
       case CustomItemPosition.none:
         length = currentAssets.length;
         break;
@@ -933,7 +950,7 @@ class AssetPicker extends StatelessWidget {
   /// 资源列表项的构建
   ///
   /// There're several conditions within this builder:
-  /// * Return [customItemBuilder] while the current path is all and [customItemPosition]
+  /// * Return [widget.customItemBuilder] while the current path is all and [widget.customItemPosition]
   ///   is not equal to [CustomItemPosition.none].
   /// * Return item builder according to the asset's type.
   ///   * [AssetType.audio] -> [audioItemBuilder]
@@ -941,8 +958,8 @@ class AssetPicker extends StatelessWidget {
   /// * Load more assets when the index reached at third line counting backwards.
   ///
   /// 资源构建有几个条件：
-  /// * 当前路径是全部资源且 [customItemPosition] 不等于 [CustomItemPosition.none] 时，将会通过
-  ///   [customItemBuilder] 构建内容。
+  /// * 当前路径是全部资源且 [widget.customItemPosition] 不等于 [CustomItemPosition.none] 时，将会通过
+  ///   [widget.customItemBuilder] 构建内容。
   /// * 根据资源类型返回对应类型的构建：
   ///   * [AssetType.audio] -> [audioItemBuilder] 音频类型
   ///   * [AssetType.image], [AssetType.video] -> [imageAndVideoItemBuilder] 图片和视频类型
@@ -958,7 +975,7 @@ class AssetPicker extends StatelessWidget {
     ).currentPathEntity;
 
     int currentIndex;
-    switch (customItemPosition) {
+    switch (widget.customItemPosition) {
       case CustomItemPosition.none:
       case CustomItemPosition.append:
         currentIndex = index;
@@ -971,16 +988,17 @@ class AssetPicker extends StatelessWidget {
       currentIndex = index;
     }
 
-    if (index == currentAssets.length - gridCount * 3 &&
+    if (index == currentAssets.length - widget.gridCount * 3 &&
         context.read<AssetPickerProvider>().hasMoreToLoad) {
-      provider.loadMoreAssets();
+      widget.provider.loadMoreAssets();
     }
 
     if (currentPath.isAll) {
       if ((index == currentAssets.length &&
-              customItemPosition == CustomItemPosition.append) ||
-          (index == 0 && customItemPosition == CustomItemPosition.prepend)) {
-        return customItemBuilder(context);
+              widget.customItemPosition == CustomItemPosition.append) ||
+          (index == 0 &&
+              widget.customItemPosition == CustomItemPosition.prepend)) {
+        return widget.customItemBuilder(context);
       }
     }
 
@@ -1001,7 +1019,7 @@ class AssetPicker extends StatelessWidget {
     return Stack(
       children: <Widget>[
         builder,
-        if (specialPickerType != SpecialPickerType.wechatMoment ||
+        if (widget.specialPickerType != SpecialPickerType.wechatMoment ||
             asset.type != AssetType.video)
           _selectIndicator(asset),
       ],
@@ -1076,7 +1094,7 @@ class AssetPicker extends StatelessWidget {
               loader = FadeImageBuilder(
                 child: () {
                   final AssetEntity asset =
-                      provider.currentAssets.elementAt(index);
+                      widget.provider.currentAssets.elementAt(index);
                   return Selector<AssetPickerProvider, List<AssetEntity>>(
                     selector: (BuildContext _, AssetPickerProvider provider) =>
                         provider.selectedAssets,
@@ -1114,60 +1132,6 @@ class AssetPicker extends StatelessWidget {
     );
   }
 
-  /// Preview button to preview selected assets.
-  /// 预览已选资源的按钮
-  Widget previewButton(BuildContext context) {
-    return Selector<AssetPickerProvider, bool>(
-      selector: (BuildContext _, AssetPickerProvider provider) =>
-          provider.isSelectedNotEmpty,
-      builder: (BuildContext _, bool isSelectedNotEmpty, Widget __) {
-        return GestureDetector(
-          onTap: isSelectedNotEmpty
-              ? () async {
-                  final List<AssetEntity> result =
-                      await AssetPickerViewer.pushToViewer(
-                    context,
-                    currentIndex: 0,
-                    assets: provider.selectedAssets,
-                    selectedAssets: provider.selectedAssets,
-                    selectorProvider: provider,
-                    themeData: theme,
-                  );
-                  if (result != null) {
-                    Navigator.of(context).pop(result);
-                  }
-                }
-              : null,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Selector<AssetPickerProvider, List<AssetEntity>>(
-              selector: (BuildContext _, AssetPickerProvider provider) =>
-                  provider.selectedAssets,
-              builder: (
-                BuildContext _,
-                List<AssetEntity> selectedAssets,
-                Widget __,
-              ) {
-                return Text(
-                  isSelectedNotEmpty
-                      ? '${Constants.textDelegate.preview}'
-                          '(${provider.selectedAssets.length})'
-                      : Constants.textDelegate.preview,
-                  style: TextStyle(
-                    color: isSelectedNotEmpty
-                        ? null
-                        : theme.textTheme.caption.color,
-                    fontSize: 18.0,
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   /// Action bar widget aligned to bottom.
   /// 底部操作栏部件
   Widget bottomActionBar(BuildContext context) {
@@ -1181,7 +1145,6 @@ class AssetPicker extends StatelessWidget {
       ),
       color: theme.primaryColor.withOpacity(isAppleOS ? 0.90 : 1.0),
       child: Row(children: <Widget>[
-        if (!isSingleAssetMode || !isAppleOS) previewButton(context),
         if (isAppleOS) const Spacer(),
         if (isAppleOS) confirmButton(context),
       ]),
@@ -1328,7 +1291,7 @@ class AssetPicker extends StatelessWidget {
       child: Theme(
         data: theme,
         child: ChangeNotifierProvider<AssetPickerProvider>.value(
-          value: provider,
+          value: widget.provider,
           child: Material(
             color: theme.canvasColor,
             child: isAppleOS ? appleOSLayout(context) : androidLayout(context),
