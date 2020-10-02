@@ -192,8 +192,7 @@ class AssetPicker extends StatefulWidget {
     try {
       PhotoManager.addChangeCallback(callback);
       PhotoManager.startChangeNotify();
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   /// Unregister the observation callback with assets changes.
@@ -202,8 +201,7 @@ class AssetPicker extends StatefulWidget {
     try {
       PhotoManager.removeChangeCallback(callback);
       PhotoManager.stopChangeNotify();
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   /// Build a dark theme according to the theme color.
@@ -314,7 +312,8 @@ class _AssetPickerState extends State<AssetPicker> {
               },
               child: Container(
                 height: appBarItemHeight,
-                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.5),
                 padding: const EdgeInsets.only(left: 12.0, right: 6.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),
@@ -503,7 +502,8 @@ class _AssetPickerState extends State<AssetPicker> {
   /// List widget for path entities.
   /// 路径选择列表组件
   Widget get pathEntityListWidget {
-    final double appBarHeight = kToolbarHeight + MediaQuery.of(context).padding.top;
+    final double appBarHeight =
+        kToolbarHeight + MediaQuery.of(context).padding.top;
     final double maxHeight = MediaQuery.of(context).size.height * 0.825;
     return Selector<AssetPickerProvider, bool>(
       selector: (BuildContext _, AssetPickerProvider provider) =>
@@ -513,7 +513,9 @@ class _AssetPickerState extends State<AssetPicker> {
           duration: switchingPathDuration,
           curve: switchingPathCurve,
           top: isAppleOS
-              ? !isSwitchingPath ? -maxHeight : appBarHeight
+              ? !isSwitchingPath
+                  ? -maxHeight
+                  : appBarHeight
               : -(!isSwitchingPath ? maxHeight : 1.0),
           child: AnimatedOpacity(
             duration: switchingPathDuration,
@@ -810,7 +812,8 @@ class _AssetPickerState extends State<AssetPicker> {
           provider.selectedAssets,
       builder: (BuildContext _, List<AssetEntity> selectedAssets, Widget __) {
         final bool selected = selectedAssets.contains(asset);
-        final double indicatorSize = MediaQuery.of(context).size.width / widget.gridCount / 3;
+        final double indicatorSize =
+            MediaQuery.of(context).size.width / widget.gridCount / 3;
         return Positioned(
           top: 0.0,
           right: 0.0,
@@ -827,8 +830,9 @@ class _AssetPickerState extends State<AssetPicker> {
               }
             },
             child: Container(
-              margin: EdgeInsets.all(
-                  MediaQuery.of(context).size.width / widget.gridCount / (isAppleOS ? 12.0 : 15.0)),
+              margin: EdgeInsets.all(MediaQuery.of(context).size.width /
+                  widget.gridCount /
+                  (isAppleOS ? 12.0 : 15.0)),
               width: indicatorSize,
               height: indicatorSize,
               alignment: AlignmentDirectional.topEnd,

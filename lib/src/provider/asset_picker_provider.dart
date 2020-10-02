@@ -11,7 +11,6 @@ import 'package:wechat_assets_picker/src/constants/constants.dart';
 
 import '../../wechat_assets_picker.dart';
 
-
 /// [ChangeNotifier] for assets picker.
 /// 资源选择器的 provider model
 class AssetPickerProvider extends ChangeNotifier {
