@@ -7,8 +7,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../constants/constants.dart';
-
 /// A custom app bar.
 /// 自定义的顶栏
 class FixedAppBar extends StatelessWidget {

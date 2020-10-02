@@ -7,10 +7,10 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -192,7 +192,7 @@ class AssetPicker extends StatefulWidget {
     try {
       PhotoManager.addChangeCallback(callback);
       PhotoManager.startChangeNotify();
-    } catch (e) {}
+    } catch (_) {}
   }
 
   /// Unregister the observation callback with assets changes.
@@ -201,7 +201,7 @@ class AssetPicker extends StatefulWidget {
     try {
       PhotoManager.removeChangeCallback(callback);
       PhotoManager.stopChangeNotify();
-    } catch (e) {}
+    } catch (_) {}
   }
 
   /// Build a dark theme according to the theme color.
@@ -252,6 +252,7 @@ class AssetPicker extends StatefulWidget {
 
 class _AssetPickerState extends State<AssetPicker> {
   @override
+  // ignore: always_declare_return_types
   initState() {
     super.initState();
     providerMain = AssetPickerViewerProvider(widget.provider.selectedAssets);
@@ -368,7 +369,7 @@ class _AssetPickerState extends State<AssetPicker> {
       child: InkWell(
         splashFactory: InkSplash.splashFactory,
         onTap: () {
-          print("I am here!");
+          print('I am here!');
           widget.provider.switchPath(pathEntity);
         },
         child: SizedBox(
@@ -852,7 +853,7 @@ class _AssetPickerState extends State<AssetPicker> {
                   reverseDuration: switchingPathDuration,
                   child: selected
                       ? isSingleAssetMode
-                          ? Icon(Icons.check, size: 18.0)
+                          ? const Icon(Icons.check, size: 18.0)
                           : Text(
                               '${selectedAssets.indexOf(asset) + 1}',
                               style: TextStyle(
@@ -1299,6 +1300,48 @@ class _AssetPickerState extends State<AssetPicker> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Progress Indicator. Used in loading data.
+class PlatformProgressIndicator extends StatelessWidget {
+  const PlatformProgressIndicator({
+    Key key,
+    this.strokeWidth = 4.0,
+    this.radius = 10.0,
+    this.size = 48.0,
+    this.color,
+    this.value,
+    this.brightness,
+  }) : super(key: key);
+
+  final double strokeWidth;
+  final double radius;
+  final double size;
+  final Color color;
+  final double value;
+  final Brightness brightness;
+
+  bool get isAppleOS => Platform.isIOS || Platform.isMacOS;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.fromSize(
+      size: Size.square(size),
+      child: isAppleOS
+          ? CupertinoTheme(
+              data: CupertinoThemeData(
+                brightness: brightness ?? Brightness.dark,
+              ),
+              child: CupertinoActivityIndicator(radius: radius),
+            )
+          : CircularProgressIndicator(
+              strokeWidth: strokeWidth,
+              valueColor:
+                  color != null ? AlwaysStoppedAnimation<Color>(color) : null,
+              value: value,
+            ),
     );
   }
 }
