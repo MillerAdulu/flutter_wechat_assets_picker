@@ -182,7 +182,6 @@ class AssetPicker extends StatefulWidget {
         return null;
       }
     } catch (e) {
-      realDebugPrint('Error when calling assets picker: $e');
       return null;
     }
   }
@@ -194,7 +193,6 @@ class AssetPicker extends StatefulWidget {
       PhotoManager.addChangeCallback(callback);
       PhotoManager.startChangeNotify();
     } catch (e) {
-      realDebugPrint('Error when registering assets callback: $e');
     }
   }
 
@@ -205,7 +203,6 @@ class AssetPicker extends StatefulWidget {
       PhotoManager.removeChangeCallback(callback);
       PhotoManager.stopChangeNotify();
     } catch (e) {
-      realDebugPrint('Error when unregistering assets callback: $e');
     }
   }
 
@@ -317,7 +314,7 @@ class _AssetPickerState extends State<AssetPicker> {
               },
               child: Container(
                 height: appBarItemHeight,
-                constraints: BoxConstraints(maxWidth: Screens.width * 0.5),
+                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
                 padding: const EdgeInsets.only(left: 12.0, right: 6.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),
@@ -506,8 +503,8 @@ class _AssetPickerState extends State<AssetPicker> {
   /// List widget for path entities.
   /// 路径选择列表组件
   Widget get pathEntityListWidget {
-    final double appBarHeight = kToolbarHeight + Screens.topSafeHeight;
-    final double maxHeight = Screens.height * 0.825;
+    final double appBarHeight = kToolbarHeight + MediaQuery.of(context).padding.top;
+    final double maxHeight = MediaQuery.of(context).size.height * 0.825;
     return Selector<AssetPickerProvider, bool>(
       selector: (BuildContext _, AssetPickerProvider provider) =>
           provider.isSwitchingPath,
@@ -523,7 +520,7 @@ class _AssetPickerState extends State<AssetPicker> {
             curve: switchingPathCurve,
             opacity: !isAppleOS || isSwitchingPath ? 1.0 : 0.0,
             child: Container(
-              width: Screens.width,
+              width: MediaQuery.of(context).size.width,
               height: maxHeight,
               decoration: BoxDecoration(
                 borderRadius: isAppleOS
@@ -577,7 +574,7 @@ class _AssetPickerState extends State<AssetPicker> {
             } else {
               return PlatformProgressIndicator(
                 color: theme.iconTheme.color,
-                size: Screens.width / widget.gridCount / 3,
+                size: MediaQuery.of(context).size.width / widget.gridCount / 3,
               );
             }
           },
@@ -596,7 +593,7 @@ class _AssetPickerState extends State<AssetPicker> {
             } else {
               return PlatformProgressIndicator(
                 color: theme.iconTheme.color,
-                size: Screens.width / widget.gridCount / 3,
+                size: MediaQuery.of(context).size.width / widget.gridCount / 3,
               );
             }
           },
@@ -813,7 +810,7 @@ class _AssetPickerState extends State<AssetPicker> {
           provider.selectedAssets,
       builder: (BuildContext _, List<AssetEntity> selectedAssets, Widget __) {
         final bool selected = selectedAssets.contains(asset);
-        final double indicatorSize = Screens.width / widget.gridCount / 3;
+        final double indicatorSize = MediaQuery.of(context).size.width / widget.gridCount / 3;
         return Positioned(
           top: 0.0,
           right: 0.0,
@@ -831,7 +828,7 @@ class _AssetPickerState extends State<AssetPicker> {
             },
             child: Container(
               margin: EdgeInsets.all(
-                  Screens.width / widget.gridCount / (isAppleOS ? 12.0 : 15.0)),
+                  MediaQuery.of(context).size.width / widget.gridCount / (isAppleOS ? 12.0 : 15.0)),
               width: indicatorSize,
               height: indicatorSize,
               alignment: AlignmentDirectional.topEnd,
@@ -899,7 +896,7 @@ class _AssetPickerState extends State<AssetPicker> {
             return GridView.builder(
               padding: isAppleOS
                   ? EdgeInsets.only(
-                      top: Screens.topSafeHeight + kToolbarHeight,
+                      top: MediaQuery.of(context).padding.top + kToolbarHeight,
                       bottom: bottomActionBarHeight,
                     )
                   : EdgeInsets.zero,
@@ -1136,12 +1133,12 @@ class _AssetPickerState extends State<AssetPicker> {
   /// 底部操作栏部件
   Widget bottomActionBar(BuildContext context) {
     Widget child = Container(
-      width: Screens.width,
-      height: bottomActionBarHeight + Screens.bottomSafeHeight,
+      width: MediaQuery.of(context).size.width,
+      height: bottomActionBarHeight + MediaQuery.of(context).padding.bottom,
       padding: EdgeInsets.only(
         left: 20.0,
         right: 20.0,
-        bottom: Screens.bottomSafeHeight,
+        bottom: MediaQuery.of(context).padding.bottom,
       ),
       color: theme.primaryColor.withOpacity(isAppleOS ? 0.90 : 1.0),
       child: Row(children: <Widget>[

@@ -6,7 +6,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_common_exports/flutter_common_exports.dart';
 
 import '../constants/constants.dart';
 
@@ -78,7 +77,7 @@ class FixedAppBar extends StatelessWidget {
     }
 
     Widget child = Container(
-      width: Screens.width,
+      width: MediaQuery.of(context).size.width,
       height: (height ?? kToolbarHeight) + MediaQuery.of(context).padding.top,
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: Stack(
@@ -136,18 +135,18 @@ class FixedAppBar extends StatelessWidget {
     }
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: context.themeData.appBarTheme.brightness.isDark
+      value: Theme.of(context).appBarTheme.brightness == Brightness.dark
           ? SystemUiOverlayStyle.light
           : SystemUiOverlayStyle.dark,
       child: Material(
-        type: color.isTransparent
+        type: color == Colors.transparent
             ? MaterialType.transparency
             : MaterialType.canvas,
         color: (backgroundColor ??
-                context.themeData.appBarTheme.color ??
-                context.themeData.primaryColor)
+                Theme.of(context).appBarTheme.color ??
+                Theme.of(context).primaryColor)
             .withOpacity(blurRadius > 0.0 ? 0.90 : 1.0),
-        elevation: elevation ?? context.themeData.appBarTheme.elevation ?? 4.0,
+        elevation: elevation ?? Theme.of(context).appBarTheme.elevation ?? 4.0,
         child: child,
       ),
     );
