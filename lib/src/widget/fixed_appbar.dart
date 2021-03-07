@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 /// 自定义的顶栏
 class FixedAppBar extends StatelessWidget {
   const FixedAppBar({
-    Key key,
+    Key? key,
     this.automaticallyImplyLeading = true,
     this.title,
     this.leading,
@@ -26,19 +26,19 @@ class FixedAppBar extends StatelessWidget {
 
   /// Title widget.
   /// 标题部件
-  final Widget title;
+  final Widget? title;
 
   /// Leading widget.
   /// 头部部件
-  final Widget leading;
+  final Widget? leading;
 
   /// Action widgets.
   /// 尾部操作部件
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
   /// Padding for actions.
   /// 尾部操作部分的内边距
-  final EdgeInsetsGeometry actionsPadding;
+  final EdgeInsetsGeometry? actionsPadding;
 
   /// Whether it should imply leading with [BackButton] automatically.
   /// 是否会自动检测并添加返回按钮至头部
@@ -50,15 +50,15 @@ class FixedAppBar extends StatelessWidget {
 
   /// Background color.
   /// 背景颜色
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// The size of the shadow below the app bar.
   /// 底部阴影的大小
-  final double elevation;
+  final double? elevation;
 
   /// Height of the app bar.
   /// 高度
-  final double height;
+  final double? height;
 
   /// Value that can enable the app bar using filter with [ui.ImageFilter]
   /// 实现高斯模糊效果的值
@@ -69,7 +69,7 @@ class FixedAppBar extends StatelessWidget {
     final Color color = (backgroundColor ?? Theme.of(context).primaryColor)
         .withOpacity(blurRadius > 0.0 ? 0.90 : 1.0);
 
-    Widget _title = title;
+    Widget? _title = title;
     if (centerTitle) {
       _title = Center(child: _title);
     }
@@ -98,7 +98,7 @@ class FixedAppBar extends StatelessWidget {
                   child: _title,
                   style: Theme.of(context)
                       .textTheme
-                      .headline6
+                      .headline6!
                       .copyWith(fontSize: 23.0),
                   maxLines: 1,
                   softWrap: false,
@@ -116,7 +116,7 @@ class FixedAppBar extends StatelessWidget {
               height: kToolbarHeight,
               child: Padding(
                 padding: actionsPadding ?? EdgeInsets.zero,
-                child: Row(mainAxisSize: MainAxisSize.min, children: actions),
+                child: Row(mainAxisSize: MainAxisSize.min, children: actions!),
               ),
             ),
         ],
@@ -155,14 +155,10 @@ class FixedAppBar extends StatelessWidget {
 /// 顶栏封装。防止内容块层级高于顶栏导致遮挡阴影。
 class FixedAppBarWrapper extends StatelessWidget {
   const FixedAppBarWrapper({
-    Key key,
-    @required this.appBar,
-    @required this.body,
-  })  : assert(
-          appBar != null && body != null,
-          'All fields must not be null.',
-        ),
-        super(key: key);
+    Key? key,
+    required this.appBar,
+    required this.body,
+  }) : super(key: key);
 
   final FixedAppBar appBar;
   final Widget body;

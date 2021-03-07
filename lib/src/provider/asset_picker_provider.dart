@@ -23,11 +23,11 @@ class AssetPickerProvider extends ChangeNotifier {
     this.requestType = RequestType.image,
     this.sortPathDelegate = SortPathDelegate.common,
     this.filterOptions,
-    List<AssetEntity> selectedAssets,
-    Duration routeDuration,
+    List<AssetEntity>? selectedAssets,
+    required Duration routeDuration,
   }) {
     if (selectedAssets?.isNotEmpty ?? false) {
-      _selectedAssets = List<AssetEntity>.from(selectedAssets);
+      _selectedAssets = List<AssetEntity>.from(selectedAssets!);
     }
     Constants.sortPathDelegate = sortPathDelegate ?? SortPathDelegate.common;
     Future<void>.delayed(routeDuration).then(
@@ -56,14 +56,14 @@ class AssetPickerProvider extends ChangeNotifier {
 
   /// Delegate to sort asset path entities.
   /// 资源路径排序的实现
-  final SortPathDelegate sortPathDelegate;
+  final SortPathDelegate? sortPathDelegate;
 
   /// Filter options for the picker.
   /// 选择器的筛选条件
   ///
   /// Will be merged into the base configuration.
   /// 将会与基础条件进行合并。
-  final FilterOptionGroup filterOptions;
+  final FilterOptionGroup? filterOptions;
 
   /// Clear all fields when dispose.
   /// 销毁时重置所有内容
@@ -85,7 +85,7 @@ class AssetPickerProvider extends ChangeNotifier {
   bool get isAssetsEmpty => _isAssetsEmpty;
 
   set isAssetsEmpty(bool value) {
-    if (value == null || value == _isAssetsEmpty) {
+    if (value || value == _isAssetsEmpty) {
       return;
     }
     _isAssetsEmpty = value;
@@ -99,7 +99,7 @@ class AssetPickerProvider extends ChangeNotifier {
   bool get hasAssetsToDisplay => _hasAssetsToDisplay;
 
   set hasAssetsToDisplay(bool value) {
-    assert(value != null);
+    assert(value);
     if (value == _hasAssetsToDisplay) {
       return;
     }
@@ -109,12 +109,12 @@ class AssetPickerProvider extends ChangeNotifier {
 
   /// Whether there're more assets waiting for load.
   /// 是否还有更多资源可以加载
-  bool get hasMoreToLoad => _currentAssets.length < _totalAssetsCount;
+  bool get hasMoreToLoad => _currentAssets!.length < _totalAssetsCount;
 
   /// The current page for assets list.
   /// 当前加载的资源列表分页数
   int get currentAssetsListPage =>
-      (math.max(1, _currentAssets.length) / pageSize).ceil();
+      (math.max(1, _currentAssets!.length) / pageSize).ceil();
 
   /// Total count for assets.
   /// 资源总数
@@ -123,7 +123,6 @@ class AssetPickerProvider extends ChangeNotifier {
   int get totalAssetsCount => _totalAssetsCount;
 
   set totalAssetsCount(int value) {
-    assert(value != null);
     if (value == _totalAssetsCount) {
       return;
     }
@@ -138,7 +137,6 @@ class AssetPickerProvider extends ChangeNotifier {
   bool get isSwitchingPath => _isSwitchingPath;
 
   set isSwitchingPath(bool value) {
-    assert(value != null);
     if (value == _isSwitchingPath) {
       return;
     }
@@ -151,19 +149,18 @@ class AssetPickerProvider extends ChangeNotifier {
   ///
   /// Using [Map] in order to save the thumb data for the first asset under the path.
   /// 使用[Map]来保存路径下第一个资源的缩略数据。
-  final Map<AssetPathEntity, Uint8List> _pathEntityList =
-      <AssetPathEntity, Uint8List>{};
+  final Map<AssetPathEntity, Uint8List?> _pathEntityList =
+      <AssetPathEntity, Uint8List?>{};
 
-  Map<AssetPathEntity, Uint8List> get pathEntityList => _pathEntityList;
+  Map<AssetPathEntity, Uint8List?> get pathEntityList => _pathEntityList;
 
   /// Path entity currently using.
   /// 正在查看的资源路径
-  AssetPathEntity _currentPathEntity;
+  AssetPathEntity? _currentPathEntity;
 
-  AssetPathEntity get currentPathEntity => _currentPathEntity;
+  AssetPathEntity get currentPathEntity => _currentPathEntity!;
 
   set currentPathEntity(AssetPathEntity value) {
-    assert(value != null);
     if (value == _currentPathEntity) {
       return;
     }
@@ -173,12 +170,11 @@ class AssetPickerProvider extends ChangeNotifier {
 
   /// Assets under current path entity.
   /// 正在查看的资源路径下的所有资源
-  List<AssetEntity> _currentAssets;
+  List<AssetEntity>? _currentAssets;
 
-  List<AssetEntity> get currentAssets => _currentAssets;
+  List<AssetEntity> get currentAssets => _currentAssets!;
 
   set currentAssets(List<AssetEntity> value) {
-    assert(value != null);
     if (value == _currentAssets) {
       return;
     }
@@ -193,7 +189,6 @@ class AssetPickerProvider extends ChangeNotifier {
   List<AssetEntity> get selectedAssets => _selectedAssets;
 
   set selectedAssets(List<AssetEntity> value) {
-    assert(value != null);
     if (value == _selectedAssets) {
       return;
     }
@@ -224,7 +219,7 @@ class AssetPickerProvider extends ChangeNotifier {
 
     /// Merge user's filter option into base options if it's not null.
     if (filterOptions != null) {
-      options.merge(filterOptions);
+      options.merge(filterOptions!);
     }
 
     final List<AssetPathEntity> _list = await PhotoManager.getAssetPathList(
@@ -239,7 +234,7 @@ class AssetPickerProvider extends ChangeNotifier {
       // Use sync method to avoid unnecessary wait.
       _pathEntityList[pathEntity] = null;
       if (requestType != RequestType.audio) {
-        getFirstThumbFromPathEntity(pathEntity).then((Uint8List data) {
+        getFirstThumbFromPathEntity(pathEntity).then((Uint8List? data) {
           _pathEntityList[pathEntity] = data;
         });
       }
@@ -266,11 +261,11 @@ class AssetPickerProvider extends ChangeNotifier {
 
   /// Get thumb data from the first asset under the specific path entity.
   /// 获取指定路径下的第一个资源的缩略数据
-  Future<Uint8List> getFirstThumbFromPathEntity(
+  Future<Uint8List?> getFirstThumbFromPathEntity(
       AssetPathEntity pathEntity) async {
     final AssetEntity asset =
         (await pathEntity.getAssetListRange(start: 0, end: 1)).elementAt(0);
-    final Uint8List assetData =
+    final Uint8List? assetData =
         await asset.thumbDataWithSize(pathThumbSize, pathThumbSize);
     return assetData;
   }
@@ -279,9 +274,9 @@ class AssetPickerProvider extends ChangeNotifier {
   /// 获取指定路径下的资源
   Future<void> getAssetsFromEntity(int page, AssetPathEntity pathEntity) async {
     _currentAssets = (await pathEntity.getAssetListPaged(
-            page, pageSize ?? pathEntity.assetCount))
+            page, pageSize ))
         .toList();
-    _hasAssetsToDisplay = currentAssets?.isNotEmpty ?? false;
+    _hasAssetsToDisplay = currentAssets.isNotEmpty;
     notifyListeners();
   }
 
@@ -297,7 +292,7 @@ class AssetPickerProvider extends ChangeNotifier {
       return;
     } else {
       final List<AssetEntity> tempList = <AssetEntity>[];
-      tempList.addAll(_currentAssets);
+      tempList.addAll(_currentAssets!);
       tempList.addAll(assets);
       currentAssets = tempList;
     }

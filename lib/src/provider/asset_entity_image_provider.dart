@@ -34,7 +34,7 @@ class AssetEntityImageProvider extends ImageProvider<AssetEntityImageProvider> {
 
   /// File type for the image asset, use it for some special type detection.
   /// 图片资源的类型，用于某些特殊类型的判断
-  ImageFileType get imageFileType => _getType();
+  ImageFileType? get imageFileType => _getType();
 
   @override
   ImageStreamCompleter load(
@@ -63,17 +63,17 @@ class AssetEntityImageProvider extends ImageProvider<AssetEntityImageProvider> {
     DecoderCallback decode,
   ) async {
     assert(key == this);
-    Uint8List data;
-    if (isOriginal ?? false) {
+    Uint8List? data;
+    if (isOriginal) {
       if (imageFileType == ImageFileType.heic) {
-        data = await (await key.entity.file).readAsBytes();
+        data = await (await key.entity.file)!.readAsBytes();
       } else {
         data = await key.entity.originBytes;
       }
     } else {
       data = await key.entity.thumbDataWithSize(thumbSize, thumbSize);
     }
-    return decode(data);
+    return decode(data!);
   }
 
   /// Get image type by reading the file extension.
@@ -82,9 +82,9 @@ class AssetEntityImageProvider extends ImageProvider<AssetEntityImageProvider> {
   /// ⚠ Not all the system version support read file name from the entity,
   /// so this method might not work sometime.
   /// 并非所有的系统版本都支持读取文件名，所以该方法有时无法返回正确的type。
-  ImageFileType _getType() {
-    ImageFileType type;
-    final String extension = entity.title?.split('.')?.last;
+  ImageFileType? _getType() {
+    ImageFileType? type;
+    final String? extension = entity.title?.split('.').last;
     if (extension != null) {
       switch (extension.toLowerCase()) {
         case 'jpg':

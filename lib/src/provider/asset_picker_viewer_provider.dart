@@ -16,11 +16,11 @@ class AssetPickerViewerProvider extends ChangeNotifier {
 
   /// Selected assets in the viewer.
   /// 查看器中已选择的资源
-  List<AssetEntity> _currentlySelectedAssets;
+  List<AssetEntity>? _currentlySelectedAssets;
 
-  List<AssetEntity> get currentlySelectedAssets => _currentlySelectedAssets;
+  List<AssetEntity> get currentlySelectedAssets => _currentlySelectedAssets!;
 
-  set currentlySelectedAssets(List<AssetEntity> value) {
+  set currentlySelectedAssets(List<AssetEntity>? value) {
     assert(value != null);
     if (value == _currentlySelectedAssets) {
       return;
@@ -30,7 +30,7 @@ class AssetPickerViewerProvider extends ChangeNotifier {
   }
 
   /// 选中资源是否为空
-  bool get isSelectedNotEmpty => currentlySelectedAssets?.isNotEmpty ?? false;
+  bool get isSelectedNotEmpty => currentlySelectedAssets.isNotEmpty;
 
   /// Select asset.
   /// 选中资源

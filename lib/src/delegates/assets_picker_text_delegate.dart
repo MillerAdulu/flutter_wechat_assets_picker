@@ -8,47 +8,47 @@
 abstract class AssetsPickerTextDelegate {
   /// Confirm string for the confirm button.
   /// 确认按钮的字段
-  String confirm;
+  String? confirm;
 
   /// Cancel string for back button.
   /// 返回按钮的字段
-  String cancel;
+  String? cancel;
 
   /// Edit string for edit button.
   /// 编辑按钮的字段
-  String edit;
+  String? edit;
 
   /// Placeholder when there's nothing can display in the picker.
   /// 选择器没有可显示的内容时的占位字段
-  String emptyPlaceHolder;
+  String? emptyPlaceHolder;
 
   /// GIF indicator string.
   /// GIF指示的字段
-  String gifIndicator;
+  String? gifIndicator;
 
   /// HEIC failed string.
   /// HEIC类型资源加载失败的字段
-  String heicNotSupported;
+  String? heicNotSupported;
 
   /// Load failed string for item.
   /// 资源加载失败时的字段
-  String loadFailed;
+  String? loadFailed;
 
   /// Original string for original selection.
   /// 选择是否原图的字段
-  String original;
+  String? original;
 
   /// Preview string for preview button.
   /// 预览按钮的字段
-  String preview;
+  String? preview;
 
   /// Select string for select button.
   /// 选择按钮的字段
-  String select;
+  String? select;
 
   /// Un-supported asset type string for assets that belongs to [AssetType.other].
   /// 未支持的资源类型的字段
-  String unSupportedAssetType;
+  String? unSupportedAssetType;
 
   /// This is used in video asset item in the picker, in order
   /// to display the duration of the video or audio type of asset.
@@ -67,37 +67,37 @@ class DefaultAssetsPickerTextDelegate implements AssetsPickerTextDelegate {
       DefaultAssetsPickerTextDelegate._internal();
 
   @override
-  String confirm = '确认';
+  String? confirm = '确认';
 
   @override
-  String cancel = '取消';
+  String? cancel = '取消';
 
   @override
-  String edit = '编辑';
+  String? edit = '编辑';
 
   @override
-  String emptyPlaceHolder = '这里空空如也';
+  String? emptyPlaceHolder = '这里空空如也';
 
   @override
-  String gifIndicator = 'GIF';
+  String? gifIndicator = 'GIF';
 
   @override
-  String heicNotSupported = '尚未支持HEIC类型资源';
+  String? heicNotSupported = '尚未支持HEIC类型资源';
 
   @override
-  String loadFailed = '加载失败';
+  String? loadFailed = '加载失败';
 
   @override
-  String original = '原图';
+  String? original = '原图';
 
   @override
-  String preview = '预览';
+  String? preview = '预览';
 
   @override
-  String select = '选择';
+  String? select = '选择';
 
   @override
-  String unSupportedAssetType = '尚未支持的资源类型';
+  String? unSupportedAssetType = '尚未支持的资源类型';
 
   @override
   String durationIndicatorBuilder(Duration duration) {
@@ -121,37 +121,37 @@ class EnglishTextDelegate implements AssetsPickerTextDelegate {
   static final EnglishTextDelegate _instance = EnglishTextDelegate._internal();
 
   @override
-  String confirm = 'Confirm';
+  String? confirm = 'Confirm';
 
   @override
-  String cancel = 'Cancel';
+  String? cancel = 'Cancel';
 
   @override
-  String edit = 'Edit';
+  String? edit = 'Edit';
 
   @override
-  String emptyPlaceHolder = 'Nothing here...';
+  String? emptyPlaceHolder = 'Nothing here...';
 
   @override
-  String gifIndicator = 'GIF';
+  String? gifIndicator = 'GIF';
 
   @override
-  String heicNotSupported = 'Unsupported HEIC asset type.';
+  String? heicNotSupported = 'Unsupported HEIC asset type.';
 
   @override
-  String loadFailed = 'Load failed';
+  String? loadFailed = 'Load failed';
 
   @override
-  String original = 'Origin';
+  String? original = 'Origin';
 
   @override
-  String preview = 'Preview';
+  String? preview = 'Preview';
 
   @override
-  String select = 'Select';
+  String? select = 'Select';
 
   @override
-  String unSupportedAssetType = 'Unsupported HEIC asset type.';
+  String? unSupportedAssetType = 'Unsupported HEIC asset type.';
 
   @override
   String durationIndicatorBuilder(Duration duration) {

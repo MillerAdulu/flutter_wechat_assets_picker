@@ -3,7 +3,6 @@
 /// [Date] 2020/3/31 15:39
 ///
 import 'dart:io';
-import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -20,32 +19,24 @@ import 'builder/fade_image_builder.dart';
 import 'builder/slide_page_transition_builder.dart';
 import 'fixed_appbar.dart';
 
-AssetPickerProvider provider;
+AssetPickerProvider? provider;
 
-AssetPickerViewerProvider providerMain;
+AssetPickerViewerProvider? providerMain;
 
 class AssetPicker extends StatefulWidget {
   AssetPicker({
-    Key key,
-    @required this.provider,
+    Key? key,
+    required this.provider,
     this.pickerTheme,
     int gridCount = 4,
-    Color themeColor,
-    AssetsPickerTextDelegate textDelegate,
+    Color? themeColor,
+    AssetsPickerTextDelegate? textDelegate,
     this.specialPickerType,
     this.customItemPosition = CustomItemPosition.none,
     this.customItemBuilder,
-  })  : assert(
-          provider != null,
-          'AssetPickerProvider must be provided and not null.',
-        ),
-        assert(
-          pickerTheme == null || themeColor == null,
-          'Theme and theme color cannot be set at the same time.',
-        ),
-        gridCount = gridCount ?? 4,
+  })  : gridCount = gridCount,
         themeColor =
-            pickerTheme?.colorScheme?.secondary ?? themeColor ?? C.themeColor,
+            pickerTheme?.colorScheme.secondary ?? themeColor ?? C.themeColor,
         super(key: key) {
     Constants.textDelegate = textDelegate ?? DefaultAssetsPickerTextDelegate();
   }
@@ -68,7 +59,7 @@ class AssetPicker extends StatefulWidget {
   /// Usually the WeChat uses the dark version (dark background color) for the picker.
   /// However, some developer wants a light theme version for some reasons.
   /// 通常情况下微信选择器使用的是暗色（暗色背景）的主题，但某些情况下开发者需要亮色或自定义主题。
-  final ThemeData pickerTheme;
+  final ThemeData? pickerTheme;
 
   /// The current special picker type for the picker.
   /// 当前特殊选择类型
@@ -79,11 +70,11 @@ class AssetPicker extends StatefulWidget {
   ///
   /// 这里包含一些特殊选择类型：
   /// * [SpecialPickerType.wechatMoment] 微信朋友圈模式。当用户选择了视频，将不能选择图片。
-  final SpecialPickerType specialPickerType;
+  final SpecialPickerType? specialPickerType;
 
   /// The widget builder for the custom item.
   /// 自定义item的构造方法
-  final WidgetBuilder customItemBuilder;
+  final WidgetBuilder? customItemBuilder;
 
   /// Allow users set custom item in the picker with several positions.
   /// 允许用户在选择器中添加一个自定义item，并指定位置。
@@ -91,31 +82,31 @@ class AssetPicker extends StatefulWidget {
 
   /// Static method to push with the navigator.
   /// 跳转至选择器的静态方法
-  static Future<List<AssetEntity>> pickAssets(
+  static Future<List<AssetEntity>?> pickAssets(
     BuildContext context, {
     int maxAssets = 9,
     int pageSize = 320,
     int pathThumbSize = 200,
     int gridCount = 4,
-    RequestType requestType,
-    SpecialPickerType specialPickerType,
-    List<AssetEntity> selectedAssets,
-    Color themeColor,
-    ThemeData pickerTheme,
-    SortPathDelegate sortPathDelegate,
-    AssetsPickerTextDelegate textDelegate,
-    FilterOptionGroup filterOptions,
-    WidgetBuilder customItemBuilder,
+    RequestType? requestType,
+    SpecialPickerType? specialPickerType,
+    List<AssetEntity>? selectedAssets,
+    Color? themeColor,
+    ThemeData? pickerTheme,
+    SortPathDelegate? sortPathDelegate,
+    AssetsPickerTextDelegate? textDelegate,
+    FilterOptionGroup? filterOptions,
+    WidgetBuilder? customItemBuilder,
     CustomItemPosition customItemPosition = CustomItemPosition.none,
     Curve routeCurve = Curves.easeIn,
     Duration routeDuration = const Duration(milliseconds: 300),
   }) async {
-    if (maxAssets == null || maxAssets < 1) {
+    if (maxAssets < 1) {
       throw ArgumentError(
         'maxAssets must be greater than 1.',
       );
     }
-    if (pageSize != null && pageSize % gridCount != 0) {
+    if (pageSize % gridCount != 0) {
       throw ArgumentError(
         'pageSize must be a multiple of gridCount.',
       );
@@ -167,7 +158,7 @@ class AssetPicker extends StatefulWidget {
           customItemPosition: customItemPosition,
           customItemBuilder: customItemBuilder,
         );
-        final List<AssetEntity> result = await Navigator.of(
+        final List<AssetEntity>? result = await Navigator.of(
           context,
           rootNavigator: true,
         ).push<List<AssetEntity>>(
@@ -188,7 +179,7 @@ class AssetPicker extends StatefulWidget {
 
   /// Register observe callback with assets changes.
   /// 注册资源（图库）变化的监听回调
-  static void registerObserve([ValueChanged<MethodCall> callback]) {
+  static void registerObserve(ValueChanged<MethodCall> callback) {
     try {
       PhotoManager.addChangeCallback(callback);
       PhotoManager.startChangeNotify();
@@ -197,7 +188,7 @@ class AssetPicker extends StatefulWidget {
 
   /// Unregister the observation callback with assets changes.
   /// 取消注册资源（图库）变化的监听回调
-  static void unregisterObserve([ValueChanged<MethodCall> callback]) {
+  static void unregisterObserve(ValueChanged<MethodCall> callback) {
     try {
       PhotoManager.removeChangeCallback(callback);
       PhotoManager.stopChangeNotify();
@@ -230,12 +221,12 @@ class AssetPicker extends StatefulWidget {
           elevation: 0,
         ),
         colorScheme: ColorScheme(
-          primary: Colors.grey[900],
-          primaryVariant: Colors.grey[900],
+          primary: Colors.grey[900]!,
+          primaryVariant: Colors.grey[900]!,
           secondary: themeColor,
           secondaryVariant: themeColor,
-          background: Colors.grey[900],
-          surface: Colors.grey[900],
+          background: Colors.grey[900]!,
+          surface: Colors.grey[900]!,
           brightness: Brightness.dark,
           error: const Color(0xffcf6679),
           onPrimary: Colors.black,
@@ -306,7 +297,7 @@ class _AssetPickerState extends State<AssetPicker> {
   /// 路径选择部件
   Widget get pathEntitySelector => UnconstrainedBox(
         child: Consumer<AssetPickerProvider>(
-          builder: (BuildContext _, AssetPickerProvider provider, Widget __) {
+          builder: (BuildContext _, AssetPickerProvider provider, Widget? __) {
             return GestureDetector(
               onTap: () {
                 provider.isSwitchingPath = !provider.isSwitchingPath;
@@ -323,34 +314,15 @@ class _AssetPickerState extends State<AssetPicker> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    if (provider.currentPathEntity != null)
-                      Flexible(
-                        child: Text(
-                          provider.currentPathEntity.name ?? '',
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.normal,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                    Flexible(
+                      child: Text(
+                        provider.currentPathEntity.name,
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.normal,
                         ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: theme.iconTheme.color.withOpacity(0.5),
-                        ),
-                        child: Transform.rotate(
-                          angle: provider.isSwitchingPath ? math.pi : 0.0,
-                          alignment: Alignment.center,
-                          child: Icon(
-                            Icons.keyboard_arrow_down,
-                            size: 20.0,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -380,13 +352,13 @@ class _AssetPickerState extends State<AssetPicker> {
                 child: AspectRatio(
                   aspectRatio: 1.0,
                   child: Selector<AssetPickerProvider,
-                      Map<AssetPathEntity, Uint8List>>(
+                      Map<AssetPathEntity, Uint8List?>>(
                     selector: (BuildContext _, AssetPickerProvider provider) =>
                         provider.pathEntityList,
                     builder: (
                       BuildContext _,
-                      Map<AssetPathEntity, Uint8List> pathEntityList,
-                      Widget __,
+                      Map<AssetPathEntity, Uint8List?> pathEntityList,
+                      Widget? __,
                     ) {
                       if (_.watch<AssetPickerProvider>().requestType ==
                           RequestType.audio) {
@@ -401,10 +373,10 @@ class _AssetPickerState extends State<AssetPicker> {
                       /// returned as it exist, which will cause the thumb bytes return null.
                       /// 此处需要检查缩略图为空的原因是：尽管文件可能已经被删除，但通过`File`读取的文件对象
                       /// 仍然存在，使得返回的数据为空。
-                      final Uint8List thumbData = pathEntityList[pathEntity];
+                      final Uint8List? thumbData = pathEntityList[pathEntity];
                       if (thumbData != null) {
                         return Image.memory(
-                          pathEntityList[pathEntity],
+                          pathEntityList[pathEntity]!,
                           fit: BoxFit.cover,
                         );
                       } else {
@@ -425,7 +397,7 @@ class _AssetPickerState extends State<AssetPicker> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 10.0),
                           child: Text(
-                            pathEntity.name ?? '',
+                            pathEntity.name,
                             style: const TextStyle(fontSize: 18.0),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -435,7 +407,7 @@ class _AssetPickerState extends State<AssetPicker> {
                       Text(
                         '(${pathEntity.assetCount})',
                         style: TextStyle(
-                          color: theme.textTheme.caption.color,
+                          color: theme.textTheme.caption!.color,
                           fontSize: 18.0,
                         ),
                         maxLines: 1,
@@ -451,7 +423,7 @@ class _AssetPickerState extends State<AssetPicker> {
                 builder: (
                   BuildContext _,
                   AssetPathEntity currentPathEntity,
-                  Widget __,
+                  Widget? __,
                 ) {
                   if (currentPathEntity == pathEntity) {
                     return AspectRatio(
@@ -482,7 +454,7 @@ class _AssetPickerState extends State<AssetPicker> {
     return Selector<AssetPickerProvider, bool>(
       selector: (BuildContext _, AssetPickerProvider provider) =>
           provider.isSwitchingPath,
-      builder: (BuildContext _, bool isSwitchingPath, Widget __) {
+      builder: (BuildContext _, bool isSwitchingPath, Widget? __) {
         return IgnorePointer(
           ignoring: !isSwitchingPath,
           child: GestureDetector(
@@ -509,7 +481,7 @@ class _AssetPickerState extends State<AssetPicker> {
     return Selector<AssetPickerProvider, bool>(
       selector: (BuildContext _, AssetPickerProvider provider) =>
           provider.isSwitchingPath,
-      builder: (BuildContext _, bool isSwitchingPath, Widget __) {
+      builder: (BuildContext _, bool isSwitchingPath, Widget? __) {
         return AnimatedPositioned(
           duration: switchingPathDuration,
           curve: switchingPathCurve,
@@ -535,13 +507,13 @@ class _AssetPickerState extends State<AssetPicker> {
                 color: theme.colorScheme.background,
               ),
               child: Selector<AssetPickerProvider,
-                  Map<AssetPathEntity, Uint8List>>(
+                  Map<AssetPathEntity, Uint8List?>>(
                 selector: (BuildContext _, AssetPickerProvider provider) =>
                     provider.pathEntityList,
                 builder: (
                   BuildContext _,
-                  Map<AssetPathEntity, Uint8List> pathEntityList,
-                  Widget __,
+                  Map<AssetPathEntity, Uint8List?> pathEntityList,
+                  Widget? __,
                 ) {
                   return ListView.separated(
                     padding: const EdgeInsets.only(top: 1.0),
@@ -571,9 +543,9 @@ class _AssetPickerState extends State<AssetPicker> {
         child: Selector<AssetPickerProvider, bool>(
           selector: (BuildContext _, AssetPickerProvider provider) =>
               provider.isAssetsEmpty,
-          builder: (BuildContext _, bool isAssetsEmpty, Widget __) {
+          builder: (BuildContext _, bool isAssetsEmpty, Widget? __) {
             if (isAssetsEmpty) {
-              return Text(Constants.textDelegate.emptyPlaceHolder);
+              return Text(Constants.textDelegate.emptyPlaceHolder!);
             } else {
               return PlatformProgressIndicator(
                 color: theme.iconTheme.color,
@@ -590,9 +562,9 @@ class _AssetPickerState extends State<AssetPicker> {
         child: Selector<AssetPickerProvider, bool>(
           selector: (BuildContext _, AssetPickerProvider provider) =>
               provider.isAssetsEmpty,
-          builder: (BuildContext _, bool isAssetsEmpty, Widget __) {
+          builder: (BuildContext _, bool isAssetsEmpty, Widget? __) {
             if (isAssetsEmpty) {
-              return Text(Constants.textDelegate.emptyPlaceHolder);
+              return Text(Constants.textDelegate.emptyPlaceHolder!);
             } else {
               return PlatformProgressIndicator(
                 color: theme.iconTheme.color,
@@ -609,7 +581,7 @@ class _AssetPickerState extends State<AssetPicker> {
   /// It'll pop with [AssetPickerProvider.selectedAssets] when there're any assets chosen.
   /// 当有资源已选时，点击按钮将把已选资源通过路由返回。
   Widget confirmButton(BuildContext context) => Consumer<AssetPickerProvider>(
-        builder: (BuildContext _, AssetPickerProvider provider, Widget __) {
+        builder: (BuildContext _, AssetPickerProvider provider, Widget? __) {
           return MaterialButton(
             minWidth: provider.isSelectedNotEmpty ? 48.0 : 20.0,
             height: appBarItemHeight,
@@ -624,11 +596,11 @@ class _AssetPickerState extends State<AssetPicker> {
               provider.isSelectedNotEmpty && !isSingleAssetMode
                   ? '${Constants.textDelegate.confirm}'
                       '(${provider.selectedAssets.length}/${provider.maxAssets})'
-                  : Constants.textDelegate.confirm,
+                  : Constants.textDelegate.confirm!,
               style: TextStyle(
                 color: provider.isSelectedNotEmpty
-                    ? theme.textTheme.bodyText1.color
-                    : theme.textTheme.caption.color,
+                    ? theme.textTheme.bodyText1!.color
+                    : theme.textTheme.caption!.color,
                 fontSize: 17.0,
                 fontWeight: FontWeight.normal,
               ),
@@ -668,14 +640,14 @@ class _AssetPickerState extends State<AssetPicker> {
               decoration: !isAppleOS
                   ? BoxDecoration(
                       borderRadius: BorderRadius.circular(2.0),
-                      color: theme.iconTheme.color.withOpacity(0.75),
+                      color: theme.iconTheme.color!.withOpacity(0.75),
                     )
                   : null,
               child: Text(
-                Constants.textDelegate.gifIndicator,
+                Constants.textDelegate.gifIndicator!,
                 style: TextStyle(
                   color: isAppleOS
-                      ? theme.textTheme.bodyText2.color
+                      ? theme.textTheme.bodyText2!.color
                       : theme.primaryColor,
                   fontSize: isAppleOS ? 14.0 : 12.0,
                   fontWeight: isAppleOS ? FontWeight.w500 : FontWeight.normal,
@@ -773,13 +745,13 @@ class _AssetPickerState extends State<AssetPicker> {
   /// 部件选中时的动画遮罩部件
   Widget _selectedBackdrop(
     BuildContext context,
-    int index,
+    int? index,
     AssetEntity asset,
   ) {
     return Selector<AssetPickerProvider, List<AssetEntity>>(
       selector: (BuildContext _, AssetPickerProvider provider) =>
           provider.selectedAssets,
-      builder: (BuildContext _, List<AssetEntity> selectedAssets, Widget __) {
+      builder: (BuildContext _, List<AssetEntity> selectedAssets, Widget? __) {
         final bool selected = selectedAssets.contains(asset);
         return Positioned.fill(
           child: GestureDetector(
@@ -811,7 +783,7 @@ class _AssetPickerState extends State<AssetPicker> {
     return Selector<AssetPickerProvider, List<AssetEntity>>(
       selector: (BuildContext _, AssetPickerProvider provider) =>
           provider.selectedAssets,
-      builder: (BuildContext _, List<AssetEntity> selectedAssets, Widget __) {
+      builder: (BuildContext _, List<AssetEntity> selectedAssets, Widget? __) {
         final bool selected = selectedAssets.contains(asset);
         final double indicatorSize =
             MediaQuery.of(context).size.width / widget.gridCount / 3;
@@ -858,7 +830,7 @@ class _AssetPickerState extends State<AssetPicker> {
                               '${selectedAssets.indexOf(asset) + 1}',
                               style: TextStyle(
                                 color: selected
-                                    ? theme.textTheme.bodyText1.color
+                                    ? theme.textTheme.bodyText1!.color
                                     : null,
                                 fontSize: isAppleOS ? 16.0 : 14.0,
                                 fontWeight: isAppleOS
@@ -880,7 +852,7 @@ class _AssetPickerState extends State<AssetPicker> {
   /// 资源缩略数据加载失败时使用的部件
   Widget get _failedItem => Center(
         child: Text(
-          Constants.textDelegate.loadFailed,
+          Constants.textDelegate.loadFailed!,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 18.0),
         ),
@@ -896,7 +868,7 @@ class _AssetPickerState extends State<AssetPicker> {
           builder: (
             BuildContext _,
             List<AssetEntity> currentAssets,
-            Widget __,
+            Widget? __,
           ) {
             return GridView.builder(
               padding: isAppleOS
@@ -921,7 +893,7 @@ class _AssetPickerState extends State<AssetPicker> {
 
   /// The function which return items count for the assets' grid.
   /// 为资源列表提供内容数量计算的方法
-  int _assetsGridItemCount(
+  int? _assetsGridItemCount(
     BuildContext context,
     List<AssetEntity> currentAssets,
   ) {
@@ -935,7 +907,7 @@ class _AssetPickerState extends State<AssetPicker> {
     if (!currentPath.isAll) {
       return currentAssets.length;
     }
-    int length;
+    int? length;
     switch (widget.customItemPosition) {
       case CustomItemPosition.none:
         length = currentAssets.length;
@@ -976,7 +948,7 @@ class _AssetPickerState extends State<AssetPicker> {
       listen: false,
     ).currentPathEntity;
 
-    int currentIndex;
+    int? currentIndex;
     switch (widget.customItemPosition) {
       case CustomItemPosition.none:
       case CustomItemPosition.append:
@@ -1000,12 +972,12 @@ class _AssetPickerState extends State<AssetPicker> {
               widget.customItemPosition == CustomItemPosition.append) ||
           (index == 0 &&
               widget.customItemPosition == CustomItemPosition.prepend)) {
-        return widget.customItemBuilder(context);
+        return widget.customItemBuilder!(context);
       }
     }
 
     final AssetEntity asset = currentAssets.elementAt(currentIndex);
-    Widget builder;
+    Widget? builder;
     switch (asset.type) {
       case AssetType.audio:
         builder = audioItemBuilder(context, currentIndex, asset);
@@ -1019,12 +991,12 @@ class _AssetPickerState extends State<AssetPicker> {
         break;
     }
     return Stack(
-      children: <Widget>[
+      children: <Widget?>[
         builder,
         if (widget.specialPickerType != SpecialPickerType.wechatMoment ||
             asset.type != AssetType.video)
           _selectIndicator(asset),
-      ],
+      ] as List<Widget>,
     );
   }
 
@@ -1032,7 +1004,7 @@ class _AssetPickerState extends State<AssetPicker> {
   /// 音频资源的部件构建
   Widget audioItemBuilder(
     BuildContext context,
-    int index,
+    int? index,
     AssetEntity asset,
   ) {
     return Stack(
@@ -1052,7 +1024,7 @@ class _AssetPickerState extends State<AssetPicker> {
             child: Padding(
               padding: const EdgeInsets.only(left: 4.0, right: 30.0),
               child: Text(
-                asset.title,
+                asset.title!,
                 style: const TextStyle(fontSize: 16.0),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1071,7 +1043,7 @@ class _AssetPickerState extends State<AssetPicker> {
   /// 图片和视频资源的部件构建
   Widget imageAndVideoItemBuilder(
     BuildContext context,
-    int index,
+    int? index,
     AssetEntity asset,
   ) {
     final AssetEntityImageProvider imageProvider =
@@ -1081,13 +1053,13 @@ class _AssetPickerState extends State<AssetPicker> {
         image: imageProvider,
         fit: BoxFit.cover,
         loadStateChanged: (ExtendedImageState state) {
-          Widget loader;
+          Widget? loader;
           switch (state.extendedImageLoadState) {
             case LoadState.loading:
               loader = const ColoredBox(color: Color(0x10ffffff));
               break;
             case LoadState.completed:
-              SpecialImageType type;
+              SpecialImageType? type;
               if (imageProvider.imageFileType == ImageFileType.gif) {
                 type = SpecialImageType.gif;
               } else if (imageProvider.imageFileType == ImageFileType.heic) {
@@ -1096,14 +1068,14 @@ class _AssetPickerState extends State<AssetPicker> {
               loader = FadeImageBuilder(
                 child: () {
                   final AssetEntity asset =
-                      widget.provider.currentAssets.elementAt(index);
+                      widget.provider.currentAssets.elementAt(index!);
                   return Selector<AssetPickerProvider, List<AssetEntity>>(
                     selector: (BuildContext _, AssetPickerProvider provider) =>
                         provider.selectedAssets,
                     builder: (
                       BuildContext _,
                       List<AssetEntity> selectedAssets,
-                      Widget __,
+                      Widget? __,
                     ) {
                       return Stack(
                         children: <Widget>[
@@ -1179,7 +1151,7 @@ class _AssetPickerState extends State<AssetPicker> {
                   child: IntrinsicWidth(
                     child: Center(
                       child: Text(
-                        Constants.textDelegate.cancel,
+                        Constants.textDelegate.cancel!,
                         style: const TextStyle(fontSize: 18.0),
                       ),
                     ),
@@ -1216,7 +1188,7 @@ class _AssetPickerState extends State<AssetPicker> {
             builder: (
               BuildContext _,
               bool hasAssetsToDisplay,
-              Widget __,
+              Widget? __,
             ) {
               return AnimatedSwitcher(
                 duration: switchingPathDuration,
@@ -1260,7 +1232,7 @@ class _AssetPickerState extends State<AssetPicker> {
         builder: (
           BuildContext _,
           bool hasAssetsToDisplay,
-          Widget __,
+          Widget? __,
         ) {
           return AnimatedSwitcher(
             duration: switchingPathDuration,
@@ -1307,7 +1279,7 @@ class _AssetPickerState extends State<AssetPicker> {
 /// Progress Indicator. Used in loading data.
 class PlatformProgressIndicator extends StatelessWidget {
   const PlatformProgressIndicator({
-    Key key,
+    Key? key,
     this.strokeWidth = 4.0,
     this.radius = 10.0,
     this.size = 48.0,
@@ -1319,9 +1291,9 @@ class PlatformProgressIndicator extends StatelessWidget {
   final double strokeWidth;
   final double radius;
   final double size;
-  final Color color;
-  final double value;
-  final Brightness brightness;
+  final Color? color;
+  final double? value;
+  final Brightness? brightness;
 
   bool get isAppleOS => Platform.isIOS || Platform.isMacOS;
 
@@ -1339,7 +1311,7 @@ class PlatformProgressIndicator extends StatelessWidget {
           : CircularProgressIndicator(
               strokeWidth: strokeWidth,
               valueColor:
-                  color != null ? AlwaysStoppedAnimation<Color>(color) : null,
+                  color != null ? AlwaysStoppedAnimation<Color?>(color) : null,
               value: value,
             ),
     );
